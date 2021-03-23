@@ -1,6 +1,6 @@
 {
-  "name": "react-native-sms",
-  "version": "1.10.1",
+  "name": "@cleartax/react-native-sms",
+  "version": "0.0.1",
   "description": "A React Native library for Sending an SMS with Callback",
   "main": "index",
   "rnpm": {
@@ -25,16 +25,16 @@
     "cool"
   ],
   "author": {
-    "name": "Trevor Porter",
-    "email": "trkporter@ucdavis.edu"
+    "name": "Sony Venkatesh",
+    "email": "sony.venkatesh97@gmail.com"
   },
-  "homepage": "https://github.com/tkporter/react-native-sms",
+  "homepage": "https://github.com/sarsony1/react-native-sms",
   "bugs": {
-    "url": "https://github.com/tkporter/react-native-sms/issues"
+    "url": "https://github.com/sarsony1/react-native-sms/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/tkporter/react-native-sms.git"
+    "url": "git://github.com/sarsony1/react-native-sms.git"
   },
   "license": "MIT"
 }
