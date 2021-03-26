@@ -6,7 +6,6 @@ import android.os.Build;
 import android.provider.Telephony;
 import android.net.Uri;
 
-import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -14,16 +13,14 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.Callback;
 
-public class SendSMSModule extends ReactContextBaseJavaModule implements ActivityEventListener {
+public class SendSMSModule extends ReactContextBaseJavaModule  {
 
     private final ReactApplicationContext reactContext;
     private Callback callback = null;
-    private static final int REQUEST_CODE = 5235;
 
     public SendSMSModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
-        reactContext.addActivityEventListener(this);
     }
 
     @Override
@@ -31,20 +28,6 @@ public class SendSMSModule extends ReactContextBaseJavaModule implements Activit
         return "SendSMS";
     }
 
-
-    @Override
-    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        //System.out.println("in module onActivityResult() request " + requestCode + " result " + resultCode);
-        //canceled intent
-        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_CANCELED) {
-            sendCallback(false, true, false);
-        }
-    }
-
-    @Override
-    public void onNewIntent(Intent intent) {
-
-    }
 
     public void sendCallback(Boolean completed, Boolean cancelled, Boolean error) {
         if (callback != null) {
@@ -54,10 +37,10 @@ public class SendSMSModule extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void send(ReadableMap options, final Callback callback) {
+    public void send(ReadableMap options, final Callback callback, long timeout) {
         try {
             this.callback = callback;
-            new SendSMSObserver(reactContext, this, options).start();
+            new SendSMSObserver(reactContext, this, options, timeout).start();
 
             String body = options.hasKey("body") ? options.getString("body") : "";
             ReadableArray recipients = options.hasKey("recipients") ? options.getArray("recipients") : null;
@@ -108,7 +91,7 @@ public class SendSMSModule extends ReactContextBaseJavaModule implements Activit
                 sendIntent.putExtra("address", recipientString);
             }
 
-            reactContext.startActivityForResult(sendIntent, REQUEST_CODE, sendIntent.getExtras());
+            reactContext.startActivity(sendIntent);
         } catch (Exception e) {
             //error!
             sendCallback(false, false, true);

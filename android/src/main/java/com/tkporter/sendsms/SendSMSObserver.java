@@ -20,6 +20,7 @@ public class SendSMSObserver extends ContentObserver {
     private static final Handler handler = new Handler(Looper.getMainLooper());
     private static final Uri uri = Uri.parse("content://sms/");
 
+    private static final String NO_TIMEOUT = -1;
     private static final String COLUMN_ADDRESS = "address";
     private static final String COLUMN_TYPE = "type";
     private static final String[] PROJECTION = { COLUMN_ADDRESS, COLUMN_TYPE };
@@ -36,9 +37,12 @@ public class SendSMSObserver extends ContentObserver {
     private ReadableArray successTypes;
     private Map<String, Integer> types;
     private boolean isAuthorizedForCallback;
+    private long timeout = NO_TIMEOUT;
+    private boolean callbackInvoked = false;
+    private boolean timedOut = false;
 
 
-    public SendSMSObserver(Context context, SendSMSModule module, ReadableMap options) {
+    public SendSMSObserver(Context context, SendSMSModule module, ReadableMap options, long timeout) {
         super(handler);
 
         types = new HashMap<>();
@@ -54,7 +58,7 @@ public class SendSMSObserver extends ContentObserver {
         this.module = module;
         this.resolver = context.getContentResolver();
         this.isAuthorizedForCallback = isAuthorizedForCallback(options);
-
+        this.timeout = timeout;
     }
 
     private ReadableArray getSuccessTypes(ReadableMap options) {
@@ -69,6 +73,17 @@ public class SendSMSObserver extends ContentObserver {
         return options.hasKey("isAuthorizedForCallback") ? options.getBoolean("isAuthorizedForCallback") : false;
     }
 
+    private Runnable runOut = new Runnable() {
+        @Override
+        public void run() {
+            if (!wasSent) {
+                timedOut = true;
+                messageCancel();
+            }
+        }
+    };
+
+
     public void start() {
         if (!this.isAuthorizedForCallback) {
             return;
@@ -76,6 +91,9 @@ public class SendSMSObserver extends ContentObserver {
 
         if (resolver != null) {
             resolver.registerContentObserver(uri, true, this);
+            if (timeout > NO_TIMEOUT) {
+                handler.postDelayed(runOut, timeout);
+            }
         }
         else {
             throw new IllegalStateException("Current SmsSendObserver instance is invalid");
@@ -92,22 +110,34 @@ public class SendSMSObserver extends ContentObserver {
         //System.out.println("sentMessage() called");
         //success!
         module.sendCallback(true, false, false);
+        callbackInvoked = true ;
         stop();
     }
 
     private void messageGeneric() {
         //User has not granted READ_SMS permission
         module.sendCallback(false, false, false);
+        callbackInvoked = true;
+        stop();
+    }
+
+    private void messageCancel(){
+        module.sendCallback(false, true, false);
         stop();
     }
 
     private void messageError() {
         //error!
         module.sendCallback(false, false, true);
+        callbackInvoked = true ;
+        stop();
     }
 
     @Override
     public void onChange(boolean selfChange) {
+        if(wasSent || timedOut){
+            return ;
+        }
 
         Cursor cursor = null;
 

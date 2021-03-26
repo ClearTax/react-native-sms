@@ -1,6 +1,6 @@
 {
   "name": "@cleartax/react-native-sms",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A React Native library for Sending an SMS with Callback",
   "main": "index",
   "rnpm": {
@@ -36,5 +36,8 @@
     "type": "git",
     "url": "git://github.com/sarsony1/react-native-sms.git"
   },
+  "publishConfig": {
+     "repository": "http://repo.internal.cleartax.co:4873/" 
+    },
   "license": "MIT"
 }
