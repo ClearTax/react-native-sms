@@ -37,7 +37,7 @@ public class SendSMSModule extends ReactContextBaseJavaModule  {
     }
 
     @ReactMethod
-    public void send(ReadableMap options, final Callback callback, long timeout) {
+    public void send(ReadableMap options, final Callback callback, double timeout) {
         try {
             this.callback = callback;
             new SendSMSObserver(reactContext, this, options, timeout).start();
@@ -90,7 +90,7 @@ public class SendSMSModule extends ReactContextBaseJavaModule  {
                 }
                 sendIntent.putExtra("address", recipientString);
             }
-
+            sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             reactContext.startActivity(sendIntent);
         } catch (Exception e) {
             //error!

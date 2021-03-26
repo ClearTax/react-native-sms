@@ -24,6 +24,6 @@ declare module "react-native-sms" {
     attachment?: AttachmentOptions;
   }
 
-  export function send(options: SendSmsOptions, callback: (completed: boolean, cancelled: boolean, error: boolean) => void): Promise<void>;
+  export function send(options: SendSmsOptions, timeout: number, callback: (completed: boolean, cancelled: boolean, error: boolean) => void): Promise<void>;
 
 }

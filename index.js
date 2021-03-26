@@ -23,13 +23,14 @@ function isAuthorizedForCallback(androidCanReadSms) {
   return Platform.OS !== 'android' || androidCanReadSms;
 }
 
-async function send(options: Object, callback: () => void, timeout: number) {
+async function send(options, timeout, callback) {
+  console.log('Inside the send function')
   const androidCanReadSms = await checkAndroidReadSmsAuthorized();
 
   options.isAuthorizedForCallback = isAuthorizedForCallback(androidCanReadSms);
 
   if (options.isAuthorizedForCallback || options.allowAndroidSendWithoutReadPermission) {
-    NativeModules.SendSMS.send(options, callback, timeout);
+    NativeModules.SendSMS.send(options, timeout, callback);
   }
 }
 
