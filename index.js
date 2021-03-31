@@ -24,7 +24,6 @@ function isAuthorizedForCallback(androidCanReadSms) {
 }
 
 async function send(options, timeout, callback) {
-  console.log('Inside the send function')
   const androidCanReadSms = await checkAndroidReadSmsAuthorized();
 
   options.isAuthorizedForCallback = isAuthorizedForCallback(androidCanReadSms);

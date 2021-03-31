@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.net.Uri;
 import android.database.Cursor;
 import android.os.Looper;
+import android.provider.Telephony.Sms.Outbox;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class SendSMSObserver extends ContentObserver {
 
     private static final Handler handler = new Handler(Looper.getMainLooper());
-    private static final Uri uri = Uri.parse("content://sms/");
+    private static final Uri uri = Outbox.CONTENT_URI;
 
     private static final int NO_TIMEOUT = -1;
     private static final String COLUMN_ADDRESS = "address";

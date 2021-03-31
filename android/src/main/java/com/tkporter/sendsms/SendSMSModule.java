@@ -37,7 +37,7 @@ public class SendSMSModule extends ReactContextBaseJavaModule  {
     }
 
     @ReactMethod
-    public void send(ReadableMap options, final Callback callback, double timeout) {
+    public void send(ReadableMap options, double timeout, final Callback callback) {
         try {
             this.callback = callback;
             new SendSMSObserver(reactContext, this, options, timeout).start();
