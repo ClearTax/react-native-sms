@@ -95,7 +95,7 @@ public class SendSMSModule extends ReactContextBaseJavaModule  {
         } catch (Exception e) {
             //error!
             sendCallback(false, false, true);
-            throw e;
+            e.printStackTrace();
         }
     }
 
