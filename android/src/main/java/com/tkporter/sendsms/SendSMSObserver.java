@@ -7,19 +7,18 @@ import android.os.Handler;
 import android.net.Uri;
 import android.database.Cursor;
 import android.os.Looper;
-import android.provider.Telephony.Sms.Outbox;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
 
-
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SendSMSObserver extends ContentObserver {
 
     private static final Handler handler = new Handler(Looper.getMainLooper());
-    private static final Uri uri = Outbox.CONTENT_URI;
+    private static final Uri uri = Uri.parse("content://sms");
 
     private static final int NO_TIMEOUT = -1;
     private static final String COLUMN_ADDRESS = "address";
@@ -136,7 +135,6 @@ public class SendSMSObserver extends ContentObserver {
 
     @Override
     public void onChange(boolean selfChange) {
-
         Cursor cursor = null;
 
         try {
@@ -150,7 +148,10 @@ public class SendSMSObserver extends ContentObserver {
             if (cursor != null && cursor.moveToFirst()) {
                 final int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
 
-                System.out.println("onChange() type: " + type);
+                if(type == types.get("draft") || type == types.get("outbox")){
+                    // Draft and outbox is something you get for every sent message
+                    return; 
+                }
 
                 //loop through provided success types
                 boolean wasSuccess = false;
