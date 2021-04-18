@@ -38,7 +38,6 @@ public class SendSMSObserver extends ContentObserver {
     private Map<String, Integer> types;
     private boolean isAuthorizedForCallback;
     private double timeout = NO_TIMEOUT;
-    private boolean callbackInvoked = false;
     private boolean timedOut = false;
 
 
@@ -76,10 +75,7 @@ public class SendSMSObserver extends ContentObserver {
     private Runnable runOut = new Runnable() {
         @Override
         public void run() {
-            if (!callbackInvoked) {
-                timedOut = true;
-                messageCancel();
-            }
+            messageCancel();
         }
     };
 
@@ -101,23 +97,26 @@ public class SendSMSObserver extends ContentObserver {
     }
 
     public void stop() {
-        if (resolver != null) {
-            resolver.unregisterContentObserver(this);
+        try {
+            Log.d(LOG_TAG, "Send SMS flow stopped");
+            handler.removeCallbacks(runOut);
+            if (resolver != null) {
+                resolver.unregisterContentObserver(this);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     private void messageSuccess() {
-        //System.out.println("sentMessage() called");
         //success!
         module.sendCallback(true, false, false);
-        callbackInvoked = true ;
         stop();
     }
 
     private void messageGeneric() {
         //User has not granted READ_SMS permission
         module.sendCallback(false, false, false);
-        callbackInvoked = true;
         stop();
     }
 
@@ -129,8 +128,18 @@ public class SendSMSObserver extends ContentObserver {
     private void messageError() {
         //error!
         module.sendCallback(false, false, true);
-        callbackInvoked = true ;
         stop();
+    }
+
+    private boolean isIrrelevantType(int type){
+        if(type == MESSAGE_TYPE_ALL||
+        type == MESSAGE_TYPE_INBOX ||
+        type == MESSAGE_TYPE_OUTBOX ||
+        type == MESSAGE_TYPE_DRAFT
+        ){
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -148,9 +157,9 @@ public class SendSMSObserver extends ContentObserver {
             if (cursor != null && cursor.moveToFirst()) {
                 final int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
 
-                if(type == types.get("draft") || type == types.get("outbox")){
-                    // Draft and outbox is something you get for every sent message
-                    return; 
+                if (isIrrelevantType(type)){
+                    // These are the types you might get which will not be relevant
+                    return;
                 }
 
                 //loop through provided success types

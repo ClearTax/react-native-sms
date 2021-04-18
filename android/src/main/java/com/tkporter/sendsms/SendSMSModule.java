@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.provider.Telephony;
 import android.net.Uri;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -17,6 +18,8 @@ public class SendSMSModule extends ReactContextBaseJavaModule  {
 
     private final ReactApplicationContext reactContext;
     private Callback callback = null;
+    private final static String LOG_TAG = "SEND_SMS_REACT_MODULE";
+    private SendSMSObserver smsObserver = null;
 
     public SendSMSModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -26,6 +29,13 @@ public class SendSMSModule extends ReactContextBaseJavaModule  {
     @Override
     public String getName() {
         return "SendSMS";
+    }
+
+    @ReactMethod
+    public void stop(){
+        if( smsObserver != null){
+            smsObserver.stop();
+        }
     }
 
 
@@ -40,7 +50,12 @@ public class SendSMSModule extends ReactContextBaseJavaModule  {
     public void send(ReadableMap options, double timeout, final Callback callback) {
         try {
             this.callback = callback;
-            new SendSMSObserver(reactContext, this, options, timeout).start();
+            if( smsObserver != null){
+                smsObserver.stop();
+            }
+            smsObserver = new SendSMSObserver(reactContext, this, options, timeout);
+            smsObserver.start();
+            Log.d(LOG_TAG, "Send SMS flow started");
 
             String body = options.hasKey("body") ? options.getString("body") : "";
             ReadableArray recipients = options.hasKey("recipients") ? options.getArray("recipients") : null;

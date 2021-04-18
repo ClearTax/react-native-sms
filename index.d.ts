@@ -25,5 +25,6 @@ declare module "react-native-sms" {
   }
 
   export function send(options: SendSmsOptions, timeout: number, callback: (completed: boolean, cancelled: boolean, error: boolean) => void): Promise<void>;
+  export function stop(): void;
 
 }

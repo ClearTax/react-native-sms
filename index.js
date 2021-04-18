@@ -33,8 +33,13 @@ async function send(options, timeout, callback) {
   }
 }
 
+const stop = () => {
+  NativeModules.SendSMS.stop();
+}
+
 const SendSMS = {
-  send
+  send,
+  stop
 }
 
 module.exports = SendSMS;
