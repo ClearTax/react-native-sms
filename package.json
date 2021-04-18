@@ -1,6 +1,6 @@
 {
   "name": "@cleartax/react-native-sms",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "A React Native library for Sending an SMS with Callback",
   "main": "index",
   "rnpm": {

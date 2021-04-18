@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.net.Uri;
 import android.database.Cursor;
 import android.os.Looper;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
@@ -16,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SendSMSObserver extends ContentObserver {
+
+    private static final String LOG_TAG = "SEND_SMS_REACT_MODULE";
 
     private static final Handler handler = new Handler(Looper.getMainLooper());
     private static final Uri uri = Uri.parse("content://sms");
@@ -110,23 +113,28 @@ public class SendSMSObserver extends ContentObserver {
 
     private void messageSuccess() {
         //success!
+        Log.d(LOG_TAG, "Success callback called");
         module.sendCallback(true, false, false);
         stop();
     }
 
     private void messageGeneric() {
         //User has not granted READ_SMS permission
+        Log.d(LOG_TAG, "Generic callback called");
         module.sendCallback(false, false, false);
         stop();
     }
 
     private void messageCancel(){
+        //Cancelled by runOut 
+        Log.d(LOG_TAG, "Cancel callback called");
         module.sendCallback(false, true, false);
         stop();
     }
 
     private void messageError() {
         //error!
+        Log.d(LOG_TAG, "Error callback called");
         module.sendCallback(false, false, true);
         stop();
     }

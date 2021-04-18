@@ -16,9 +16,10 @@ import com.facebook.react.bridge.Callback;
 
 public class SendSMSModule extends ReactContextBaseJavaModule  {
 
+    private final static String LOG_TAG = "SEND_SMS_REACT_MODULE";
+    
     private final ReactApplicationContext reactContext;
     private Callback callback = null;
-    private final static String LOG_TAG = "SEND_SMS_REACT_MODULE";
     private SendSMSObserver smsObserver = null;
 
     public SendSMSModule(ReactApplicationContext reactContext) {
