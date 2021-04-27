@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class SendSMSObserver extends ContentObserver {
 
-    private static final String LOG_TAG = "SEND_SMS_REACT_MODULE";
+    private static final String LOG_TAG = "SendSMSModule";
 
     private static final Handler handler = new Handler(Looper.getMainLooper());
     private static final Uri uri = Uri.parse("content://sms");

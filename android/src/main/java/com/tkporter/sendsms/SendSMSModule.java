@@ -16,7 +16,7 @@ import com.facebook.react.bridge.Callback;
 
 public class SendSMSModule extends ReactContextBaseJavaModule  {
 
-    private final static String LOG_TAG = "SEND_SMS_REACT_MODULE";
+    private final static String LOG_TAG = "SendSMSModule";
     
     private final ReactApplicationContext reactContext;
     private Callback callback = null;
@@ -51,9 +51,7 @@ public class SendSMSModule extends ReactContextBaseJavaModule  {
     public void send(ReadableMap options, double timeout, final Callback callback) {
         try {
             this.callback = callback;
-            if( smsObserver != null){
-                smsObserver.stop();
-            }
+            stop();
             smsObserver = new SendSMSObserver(reactContext, this, options, timeout);
             smsObserver.start();
             Log.d(LOG_TAG, "Send SMS flow started");
