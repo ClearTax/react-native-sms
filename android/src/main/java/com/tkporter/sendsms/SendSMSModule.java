@@ -23,7 +23,6 @@ public class SendSMSModule extends ReactContextBaseJavaModule  {
     public SendSMSModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
-        reactContext.addActivityEventListener(this);
     }
 
     @Override
