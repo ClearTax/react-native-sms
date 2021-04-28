@@ -83,9 +83,13 @@ public class SendSMSObserver extends ContentObserver {
     }
 
     public void stop() {
+       try{
         if (resolver != null) {
             resolver.unregisterContentObserver(this);
         }
+       }catch(Exception e){
+           e.printStackTrace();
+       }
     }
 
     private void messageSuccess() {
